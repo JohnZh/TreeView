@@ -20,6 +20,14 @@ public class TreeViewNode {
         this.children = new ArrayList<TreeViewNode>();
     }
     
+    public void setNodeId(int nid) {
+        this.nid = nid;
+    }
+    
+    public int getNodeId() {
+        return nid;
+    }
+    
     public String getContent() {
         return content;
     }
