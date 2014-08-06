@@ -6,10 +6,12 @@ import java.util.List;
 public class TreeViewBuilder {
     
     private List<TreeViewNode> displayedNodes;
+    private List<TreeViewNode> allNodes; // not be used
     private int counter;
     
     private void initialize() {
         displayedNodes = new ArrayList<TreeViewNode>();
+        allNodes = new ArrayList<TreeViewNode>();
         counter = 0; 
     }
     
@@ -19,11 +21,13 @@ public class TreeViewBuilder {
     
     public TreeViewBuilder(TreeViewNode root) {
         initialize();
+        buildAllNodes(root);
         buildDisplayedNodes(root, false);
     }
     
     public TreeViewBuilder(TreeViewNode root, boolean expandAll) {
         initialize();
+        buildAllNodes(root);
         buildDisplayedNodes(root, expandAll);
     }
     
@@ -40,13 +44,24 @@ public class TreeViewBuilder {
     private void clearDisplayedNodes() {
         if (displayedNodes != null) {
             displayedNodes.clear();
-            counter = 0;
+        }
+    }
+    
+    private void buildAllNodes(TreeViewNode root) {
+        if (root != null) {
+            root.setNodeId(counter++);
+            allNodes.add(root);
+        }
+        List<TreeViewNode> children = root.getChildren();
+        if (children != null && children.size() > 0) {
+            for (int i = 0; i < children.size(); i++) {
+                buildAllNodes(children.get(i));
+            }
         }
     }
     
     private void buildDisplayedNodes(TreeViewNode root, boolean expandAll) {
         if (root != null) {
-            root.setNodeId(counter++);
             displayedNodes.add(root);
         }
         

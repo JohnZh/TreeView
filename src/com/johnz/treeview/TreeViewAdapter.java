@@ -115,6 +115,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
     private void setupTreeViewNode(ViewHolder viewHolder, final TreeViewNode node) {
         View treeNodeView = getTreeNodeView(node);
         if (treeNodeView != null) {
+            viewHolder.contentWrapper.removeAllViews();
             viewHolder.contentWrapper.addView(treeNodeView);
         }
         viewHolder.contentWrapper.setOnClickListener(new OnClickListener() {
