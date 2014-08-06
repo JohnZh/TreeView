@@ -18,6 +18,9 @@ public class TreeViewNode {
         this.iconRes = iconRes;
         this.isExpand = false;
         this.children = new ArrayList<TreeViewNode>();
+        if (this.parent != null) {
+            this.parent.addChildNode(this);
+        }
     }
     
     public void setNodeId(int nid) {
@@ -60,24 +63,32 @@ public class TreeViewNode {
     }
     
     public void addChildNode(TreeViewNode child) {
-        this.children.add(child);
+        if (!this.children.contains(child)) {
+            this.children.add(child);
+        }
     }
     
     public int getLevel() {
         return parent != null ? parent.getLevel() + 1 : 0;
     }
     
-    public String getTreePosition() {
-        return parent != null ? parent.getTreePosition() + "," + getPositionInParent() : "0";
+    public String getPositionInTree() {
+        return parent != null ? parent.getPositionInTree() + "," + getPositionInParent() : "0";
     }
     
     public int getPositionInParent() {
-        List<TreeViewNode> nodes = parent.getChildren();
-        return nodes.indexOf(this);
+        if (parent != null) {
+            List<TreeViewNode> nodes = parent.getChildren();
+            return nodes.indexOf(this);
+        }
+        return 0;
     }
     
     public boolean isLastNodeInParent() {
-        List<TreeViewNode> nodes = parent.getChildren();
-        return getPositionInParent() == nodes.size() - 1;
+        if (parent != null) {
+            List<TreeViewNode> nodes = parent.getChildren();
+            return getPositionInParent() == nodes.size() - 1;
+        } 
+        return true;
     }
 }

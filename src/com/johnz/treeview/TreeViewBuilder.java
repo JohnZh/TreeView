@@ -32,8 +32,8 @@ public class TreeViewBuilder {
     }
     
     public void updateDisplayedNodes() {
-        clearDisplayedNodes();
         TreeViewNode root = displayedNodes.get(0);
+        clearDisplayedNodes();
         buildDisplayedNodes(root, false);
     }
     
