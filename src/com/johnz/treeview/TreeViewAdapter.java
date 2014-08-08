@@ -137,7 +137,11 @@ public abstract class TreeViewAdapter extends BaseAdapter {
             viewHolder.contentWrapper.removeAllViews();
             viewHolder.contentWrapper.addView(treeNodeView);
         }
-        viewHolder.contentWrapper.setOnClickListener(new OnClickListener() {
+        setContentWrapperListeners(viewHolder.contentWrapper, node);
+    }
+    
+    private void setContentWrapperListeners(FrameLayout contentWrapper, final TreeViewNode node) {
+        contentWrapper.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mCallback != null) {
@@ -148,8 +152,8 @@ public abstract class TreeViewAdapter extends BaseAdapter {
                 }
             }
         });
-        viewHolder.contentWrapper.setLongClickable(true);
-        viewHolder.contentWrapper.setOnLongClickListener(new OnLongClickListener() {
+        contentWrapper.setLongClickable(true);
+        contentWrapper.setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 longClickNode(node);

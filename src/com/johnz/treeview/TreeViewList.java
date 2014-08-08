@@ -10,8 +10,15 @@ public class TreeViewList extends ListView {
     
     public TreeViewList(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initialize();
     }
     
+    private void initialize() {
+        this.setDivider(null);
+        this.setSelector(android.R.color.transparent);
+        
+    }
+
     public void setTreeViewBuilder(TreeViewBuilder treeViewBuilder) {
         mTreeViewBuilder = treeViewBuilder;
     }
@@ -20,7 +27,8 @@ public class TreeViewList extends ListView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int singleOffset = getContext().getResources().getDimensionPixelSize(R.dimen.ic_expand_collapse_width);
-        int offset = mTreeViewBuilder.getDeepestLevel() * singleOffset;
+        int extraOffset = getContext().getResources().getDimensionPixelSize(R.dimen.treeview_extra_offset);
+        int offset = mTreeViewBuilder.getDeepestLevel() * singleOffset + extraOffset;
         setMeasuredDimension(offset + getMeasuredWidth(), getMeasuredHeight());
     }
 }
