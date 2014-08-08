@@ -12,10 +12,8 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PathEffect;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
@@ -29,52 +27,19 @@ public abstract class TreeViewAdapter extends BaseAdapter {
     
     public abstract View getTreeNodeView(TreeViewNode node);
     
-    public static interface TreeViewCallback {
-        public void onNodeClick(TreeViewNode node);
-        public void onNodeLongClick(TreeViewNode node);
-        
-        /**
-         * Called when tree view node is expanded or collapsed
-         * @param node the expanded or collapsed node
-         * @param flag true is expanded, false is collapsed
-         */
-        public void onNodeExpandedOrCollapsed(TreeViewNode node, boolean flag);
-    }
-    
-    private TreeViewCallback mCallback;
-    
-    public void setTreeViewCallback(TreeViewCallback callback) {
-        mCallback = callback;
-    }
-    
     private Context mContext;
     private TreeViewBuilder mTreeViewBuilder;
+    private TreeView mTreeView;
     private List<TreeViewNode> mDisplayedNodes;
-    
-    private boolean mDotted;
-    private boolean mNodeClickExpand;
     
     public TreeViewAdapter(Context context, TreeViewBuilder treeViewBuilder) {
         mContext = context;
         mTreeViewBuilder = treeViewBuilder;
         mDisplayedNodes = mTreeViewBuilder.getDisplayedNodes();
-        mDotted = true;
     }
     
-    public TreeViewAdapter(Context context, TreeViewBuilder treeViewBuilder, boolean dotted) {
-        mContext = context;
-        mTreeViewBuilder = treeViewBuilder;
-        mDisplayedNodes = mTreeViewBuilder.getDisplayedNodes();
-        mDotted = dotted;
-    }
-    
-    public void setDottedLineVisible(boolean visible) {
-        mDotted = visible;
-        notifyDataSetChanged();
-    }
-    
-    public void setNodeClickExpandEnable(boolean enable) {
-        mNodeClickExpand = enable;
+    public void setTreeView(TreeView treeView) {
+        mTreeView = treeView;
     }
     
     public TreeViewBuilder getTreeViewBuilder() {
@@ -116,7 +81,6 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         TreeViewNode node = (TreeViewNode) getItem(position);
         setupTreeView(viewHolder, node);
         setupTreeViewNode(viewHolder, node);
-        
         return convertView;
     }
     
@@ -144,10 +108,10 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         contentWrapper.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCallback != null) {
-                    mCallback.onNodeClick(node);
+                if (mTreeView.getCallback() != null) {
+                    mTreeView.getCallback().onNodeClick(node);
                 }
-                if (mNodeClickExpand) {
+                if (mTreeView.isNodeClickExpandEnable()) {
                     expandOrCollapseNode(node);
                 }
             }
@@ -170,7 +134,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         layoutParams.width = nodeOffset;
         layoutParams.height = nodeHeight;
         viewHolder.dottedBlock.setLayoutParams(layoutParams);
-        if (mDotted && nodeOffset > 0) { // Root not need dotted line
+        if (mTreeView.isDottedLineVisible() && nodeOffset > 0) { // Root not need dotted line
             Bitmap dottedLineBackground = createDottedLineBackground(node, singleOffset, nodeOffset, nodeHeight);
             if (dottedLineBackground != null) {
                 viewHolder.dottedBlock.setBackgroundDrawable(
@@ -244,18 +208,19 @@ public abstract class TreeViewAdapter extends BaseAdapter {
     }
     
     private void expandOrCollapseNode(TreeViewNode node) {
+        if (node.isLeaf()) return;
         node.setExpand(!node.isExpand());
         mTreeViewBuilder.updateDisplayedNodes();
         mDisplayedNodes = mTreeViewBuilder.getDisplayedNodes();
         notifyDataSetChanged();
-        if (mCallback != null) {
-            mCallback.onNodeExpandedOrCollapsed(node, node.isExpand());
+        if (mTreeView.getCallback() != null) {
+            mTreeView.getCallback().onNodeExpandedOrCollapsed(node, node.isExpand());
         }
     }
     
     private void longClickNode(TreeViewNode node) {
-        if (mCallback != null) {
-            mCallback.onNodeLongClick(node);
+        if (mTreeView.getCallback() != null) {
+            mTreeView.getCallback().onNodeLongClick(node);
         }
     }
 }
