@@ -117,12 +117,6 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         setupTreeView(viewHolder, node);
         setupTreeViewNode(viewHolder, node);
         
-        convertView.measure(
-                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-
-        Log.d("John", "Row width: " + convertView.getMeasuredWidth());
-        
         return convertView;
     }
     
