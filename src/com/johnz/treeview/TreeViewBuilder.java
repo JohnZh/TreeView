@@ -8,11 +8,13 @@ public class TreeViewBuilder {
     private List<TreeViewNode> displayedNodes;
     private List<TreeViewNode> allNodes; // not be used
     private int counter;
+    private int deepestLevel;
     
     private void initialize() {
         displayedNodes = new ArrayList<TreeViewNode>();
         allNodes = new ArrayList<TreeViewNode>();
         counter = 0; 
+        deepestLevel = 0;
     }
     
     public TreeViewBuilder() {
@@ -35,6 +37,10 @@ public class TreeViewBuilder {
         return displayedNodes;
     }
     
+    public int getDeepestLevel() {
+        return deepestLevel;
+    }
+    
     public void updateDisplayedNodes() {
         TreeViewNode root = displayedNodes.get(0);
         clearDisplayedNodes();
@@ -51,6 +57,10 @@ public class TreeViewBuilder {
         if (root != null) {
             root.setNodeId(counter++);
             allNodes.add(root);
+        }
+        int nodeLevel = root.getLevel();
+        if (deepestLevel < nodeLevel) {
+            deepestLevel = nodeLevel;
         }
         List<TreeViewNode> children = root.getChildren();
         if (children != null && children.size() > 0) {

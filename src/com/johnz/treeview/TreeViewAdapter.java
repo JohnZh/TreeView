@@ -77,6 +77,10 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         mNodeClickExpand = enable;
     }
     
+    public TreeViewBuilder getTreeViewBuilder() {
+        return mTreeViewBuilder;
+    }
+    
     public Context getContext() {
         return mContext;
     }
@@ -113,11 +117,11 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         setupTreeView(viewHolder, node);
         setupTreeViewNode(viewHolder, node);
         
-        /*convertView.measure(
+        convertView.measure(
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
-        Log.d("John", "Row width: " + convertView.getMeasuredWidth());*/
+        Log.d("John", "Row width: " + convertView.getMeasuredWidth());
         
         return convertView;
     }
