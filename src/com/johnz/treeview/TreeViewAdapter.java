@@ -64,7 +64,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-
+    
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
@@ -81,6 +81,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         TreeViewNode node = (TreeViewNode) getItem(position);
         setupTreeView(viewHolder, node);
         setupTreeViewNode(viewHolder, node);
+        
         return convertView;
     }
     

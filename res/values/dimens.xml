@@ -2,5 +2,4 @@
 <resources>
     <dimen name="treeview_node_height">35dp</dimen>
     <dimen name="ic_expand_collapse_width">25dp</dimen>
-    <dimen name="treeview_extra_offset">100dp</dimen>
 </resources>

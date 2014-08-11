@@ -3,7 +3,10 @@ package com.johnz.treeview;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.ListView;
 
 public class TreeView extends HorizontalScrollView {
     
@@ -21,11 +24,12 @@ public class TreeView extends HorizontalScrollView {
     
     private TreeViewAdapter mTreeViewAdapter;
 
-    private TreeViewList mTreeViewList;
+    private ListView mTreeViewList;
     private TreeViewCallback mCallback;
     
     private boolean mDottedVisible;
     private boolean mNodeClickExpand;
+    private int mMaxWidth;
     
     public TreeView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,9 +38,13 @@ public class TreeView extends HorizontalScrollView {
     
     public void initialize() {
         LayoutInflater.from(getContext()).inflate(R.layout.widget_treeview, this, true);
-        mTreeViewList = (TreeViewList) findViewById(R.id.treeList);
+        mTreeViewList = (ListView) findViewById(R.id.treeList);
         mDottedVisible = true;
         mNodeClickExpand = true;
+    }
+    
+    public ListView getListView(){
+        return mTreeViewList;
     }
     
     public TreeViewCallback getCallback() {
@@ -69,7 +77,23 @@ public class TreeView extends HorizontalScrollView {
     public void setAdapter(TreeViewAdapter adapter) {
         mTreeViewAdapter = adapter;
         mTreeViewAdapter.setTreeView(this);
-        mTreeViewList.setTreeViewBuilder(mTreeViewAdapter.getTreeViewBuilder());
         mTreeViewList.setAdapter(adapter);
+    }
+    
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        for (int i = 0; i < mTreeViewAdapter.getCount(); i++) {
+            View child = mTreeViewAdapter.getView(i, null, mTreeViewList);
+            child.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            if (mMaxWidth < child.getMeasuredWidth()) {
+                mMaxWidth = child.getMeasuredWidth();
+            }
+            ViewGroup.LayoutParams params = mTreeViewList.getLayoutParams();
+            params.width = mMaxWidth;
+            mTreeViewList.setLayoutParams(params);
+            mTreeViewList.requestLayout();
+        }
     }
 }

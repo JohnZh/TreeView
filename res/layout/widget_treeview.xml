@@ -4,9 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <com.johnz.treeview.TreeViewList 
+    <ListView 
         android:id="@+id/treeList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"/>
 
 </LinearLayout>
