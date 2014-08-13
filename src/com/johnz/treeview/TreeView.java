@@ -11,15 +11,15 @@ import android.widget.ListView;
 public class TreeView extends HorizontalScrollView {
     
     public static interface TreeViewCallback {
-        public void onNodeClick(TreeViewNode node);
-        public void onNodeLongClick(TreeViewNode node);
+        public void onNodeClick(TreeViewNode<?> node);
+        public void onNodeLongClick(TreeViewNode<?> node);
         
         /**
          * Called when tree view node is expanded or collapsed
          * @param node the expanded or collapsed node
          * @param flag true is expanded, false is collapsed
          */
-        public void onNodeExpandedOrCollapsed(TreeViewNode node, boolean flag);
+        public void onNodeExpandedOrCollapsed(TreeViewNode<?> node, boolean flag);
     }
     
     private TreeViewAdapter mTreeViewAdapter;

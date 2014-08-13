@@ -23,16 +23,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public abstract class TreeViewAdapter extends BaseAdapter {
+public abstract class TreeViewAdapter<T> extends BaseAdapter {
     
-    public abstract View getTreeNodeView(TreeViewNode node);
+    public abstract View getTreeNodeView(TreeViewNode<?> node);
     
     private Context mContext;
-    private TreeViewBuilder mTreeViewBuilder;
+    private TreeViewBuilder<T> mTreeViewBuilder;
     private TreeView mTreeView;
-    private List<TreeViewNode> mDisplayedNodes;
+    private List<TreeViewNode<T>> mDisplayedNodes;
     
-    public TreeViewAdapter(Context context, TreeViewBuilder treeViewBuilder) {
+    public TreeViewAdapter(Context context, TreeViewBuilder<T> treeViewBuilder) {
         mContext = context;
         mTreeViewBuilder = treeViewBuilder;
         mDisplayedNodes = mTreeViewBuilder.getDisplayedNodes();
@@ -42,7 +42,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         mTreeView = treeView;
     }
     
-    public TreeViewBuilder getTreeViewBuilder() {
+    public TreeViewBuilder<T> getTreeViewBuilder() {
         return mTreeViewBuilder;
     }
     
@@ -78,7 +78,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
             viewHolder.contentWrapper = (FrameLayout) convertView.findViewById(R.id.wrapper_content);
             convertView.setTag(viewHolder);
         }
-        TreeViewNode node = (TreeViewNode) getItem(position);
+        TreeViewNode<T> node = (TreeViewNode<T>) getItem(position);
         setupTreeView(viewHolder, node);
         setupTreeViewNode(viewHolder, node);
         
@@ -91,12 +91,12 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         public FrameLayout contentWrapper;
     }
     
-    private void setupTreeView(ViewHolder viewHolder, final TreeViewNode node) {
+    private void setupTreeView(ViewHolder viewHolder, final TreeViewNode<T> node) {
         setupDottedBlockView(viewHolder, node);
         setupExpandCollapseView(viewHolder, node);
     }
     
-    private void setupTreeViewNode(ViewHolder viewHolder, final TreeViewNode node) {
+    private void setupTreeViewNode(ViewHolder viewHolder, final TreeViewNode<T> node) {
         View treeNodeView = getTreeNodeView(node);
         if (treeNodeView != null) {
             viewHolder.contentWrapper.removeAllViews();
@@ -105,7 +105,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         setContentWrapperListeners(viewHolder.contentWrapper, node);
     }
     
-    private void setContentWrapperListeners(FrameLayout contentWrapper, final TreeViewNode node) {
+    private void setContentWrapperListeners(FrameLayout contentWrapper, final TreeViewNode<T> node) {
         contentWrapper.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,7 +127,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         });
     }
 
-    private void setupDottedBlockView(ViewHolder viewHolder, TreeViewNode node) {
+    private void setupDottedBlockView(ViewHolder viewHolder, TreeViewNode<T> node) {
         LayoutParams layoutParams = viewHolder.dottedBlock.getLayoutParams();
         int singleOffset = mContext.getResources().getDimensionPixelSize(R.dimen.ic_expand_collapse_width);
         int nodeOffset = (node.getLevel() + (node.isLeaf()? 1: 0)) * singleOffset;
@@ -148,14 +148,14 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         }
     }
     
-    private Bitmap createDottedLineBackground(TreeViewNode node, int singleOffset, int nodeOffset, int nodeHeight) {
+    private Bitmap createDottedLineBackground(TreeViewNode<T> node, int singleOffset, int nodeOffset, int nodeHeight) {
         Bitmap bitmap = Bitmap.createBitmap(nodeOffset, nodeHeight, Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = createDottedLinePaint();
         
         int startX = singleOffset / 2;
-        TreeViewNode parent = node.getParent();
-        TreeViewNode child = node;
+        TreeViewNode<T> parent = node.getParent();
+        TreeViewNode<T> child = node;
         
         // Draw one horizontal line
         canvas.drawLine(startX + parent.getLevel() * singleOffset, nodeHeight/2, 
@@ -193,7 +193,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         return paint;
     }
 
-    private void setupExpandCollapseView(ViewHolder viewHolder, final TreeViewNode node) {
+    private void setupExpandCollapseView(ViewHolder viewHolder, final TreeViewNode<T> node) {
         if (node.isLeaf()) {
             viewHolder.icExpandCollapse.setVisibility(View.GONE);
         } else {
@@ -208,7 +208,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         });
     }
     
-    private void expandOrCollapseNode(TreeViewNode node) {
+    private void expandOrCollapseNode(TreeViewNode<T> node) {
         if (node.isLeaf()) return;
         node.setExpand(!node.isExpand());
         mTreeViewBuilder.updateDisplayedNodes();
@@ -219,7 +219,7 @@ public abstract class TreeViewAdapter extends BaseAdapter {
         }
     }
     
-    private void longClickNode(TreeViewNode node) {
+    private void longClickNode(TreeViewNode<T> node) {
         if (mTreeView.getCallback() != null) {
             mTreeView.getCallback().onNodeLongClick(node);
         }
