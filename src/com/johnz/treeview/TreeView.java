@@ -22,7 +22,7 @@ public class TreeView extends HorizontalScrollView {
         public void onNodeExpandedOrCollapsed(TreeViewNode<?> node, boolean flag);
     }
     
-    private TreeViewAdapter mTreeViewAdapter;
+    private TreeViewAdapter<?> mTreeViewAdapter;
 
     private ListView mTreeViewList;
     private TreeViewCallback mCallback;
@@ -74,15 +74,18 @@ public class TreeView extends HorizontalScrollView {
         return mNodeClickExpand;
     }
     
-    public void setAdapter(TreeViewAdapter adapter) {
-        mTreeViewAdapter = adapter;
-        mTreeViewAdapter.setTreeView(this);
-        mTreeViewList.setAdapter(adapter);
+    public void setAdapter(TreeViewAdapter<?> adapter) {
+        if (adapter != null) {
+            mTreeViewAdapter = adapter;
+            mTreeViewAdapter.setTreeView(this);
+            mTreeViewList.setAdapter(adapter);
+        }
     }
     
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if (mTreeViewAdapter == null) return;
         for (int i = 0; i < mTreeViewAdapter.getCount(); i++) {
             View child = mTreeViewAdapter.getView(i, null, mTreeViewList);
             child.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 
