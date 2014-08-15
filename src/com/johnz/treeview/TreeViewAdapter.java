@@ -25,7 +25,7 @@ import android.widget.LinearLayout;
 
 public abstract class TreeViewAdapter<T> extends BaseAdapter {
     
-    public abstract View getTreeNodeView(TreeViewNode<?> node);
+    public abstract View getTreeNodeView(TreeViewNode<T> node);
     
     private Context mContext;
     private TreeViewBuilder<T> mTreeViewBuilder;
@@ -35,7 +35,9 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
     public TreeViewAdapter(Context context, TreeViewBuilder<T> treeViewBuilder) {
         mContext = context;
         mTreeViewBuilder = treeViewBuilder;
-        mDisplayedNodes = mTreeViewBuilder.getDisplayedNodes();
+        if (mTreeViewBuilder != null) {
+            mDisplayedNodes = mTreeViewBuilder.getDisplayedNodes();
+        }
     }
     
     public void setTreeView(TreeView treeView) {
@@ -52,12 +54,18 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mDisplayedNodes.size();
+        if (mDisplayedNodes != null) {
+            return mDisplayedNodes.size();
+        }
+        return 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return mDisplayedNodes.get(position);
+        if (mDisplayedNodes != null) {
+            return mDisplayedNodes.get(position);
+        }
+        return null;
     }
 
     @Override
@@ -158,8 +166,9 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
         TreeViewNode<T> child = node;
         
         // Draw one horizontal line
-        canvas.drawLine(startX + parent.getLevel() * singleOffset, nodeHeight/2, 
-                nodeOffset, nodeHeight/2, paint);
+        if (parent != null) {
+            canvas.drawLine(startX + parent.getLevel() * singleOffset, nodeHeight/2, nodeOffset, nodeHeight/2, paint);
+        }
         
         // Draw multiple vertical line
         while (parent != null) {

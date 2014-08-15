@@ -55,6 +55,10 @@ public class TreeViewNode<T> {
         return iconRes;
     }
     
+    public void setIconRes(int iconRes) {
+        this.iconRes = iconRes;
+    }
+    
     public boolean isLeaf() {
         if (children != null && children.size() > 0) {
             return false;
