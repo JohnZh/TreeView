@@ -25,6 +25,12 @@ public class TreeViewBuilder<T> {
         buildDisplayedNodes(root, true);
     }
     
+    public TreeViewBuilder(TreeViewNode<T> root, boolean expandAll) {
+        initialize();
+        buildAllNodes(root);
+        buildDisplayedNodes(root, expandAll);
+    }
+    
     public List<TreeViewNode<T>> getDisplayedNodes() {
         return displayedNodes;
     }

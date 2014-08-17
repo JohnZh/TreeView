@@ -1,7 +1,9 @@
 package com.johnz.treeview;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +31,6 @@ public class TreeView extends HorizontalScrollView {
     
     private boolean mDottedVisible;
     private boolean mNodeClickExpand;
-    private int mMaxWidth;
     
     public TreeView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -82,21 +83,18 @@ public class TreeView extends HorizontalScrollView {
         }
     }
     
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (mTreeViewAdapter == null) return;
-        for (int i = 0; i < mTreeViewAdapter.getCount(); i++) {
-            View child = mTreeViewAdapter.getView(i, null, mTreeViewList);
-            child.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 
-                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            if (mMaxWidth < child.getMeasuredWidth()) {
-                mMaxWidth = child.getMeasuredWidth();
-            }
-            ViewGroup.LayoutParams params = mTreeViewList.getLayoutParams();
-            params.width = mMaxWidth;
-            mTreeViewList.setLayoutParams(params);
-            mTreeViewList.requestLayout();
+    public void setTreeViewWidth(final int width) {
+        if (mTreeViewList != null) {
+            mTreeViewList.post(new Runnable() {
+                
+                @Override
+                public void run() {
+                    ViewGroup.LayoutParams params = mTreeViewList.getLayoutParams();
+                    params.width = width;
+                    mTreeViewList.setLayoutParams(params);
+                    mTreeViewList.requestLayout();
+                }
+            });
         }
-    }
+    } 
 }

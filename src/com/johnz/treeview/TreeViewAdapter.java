@@ -2,7 +2,9 @@ package com.johnz.treeview;
 
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -12,8 +14,10 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PathEffect;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
@@ -31,6 +35,8 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
     private TreeViewBuilder<T> mTreeViewBuilder;
     private TreeView mTreeView;
     private List<TreeViewNode<T>> mDisplayedNodes;
+    
+    private int mMaxWidth;
     
     public TreeViewAdapter(Context context, TreeViewBuilder<T> treeViewBuilder) {
         mContext = context;
@@ -73,6 +79,7 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
         return position;
     }
     
+    @SuppressLint("NewApi")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
@@ -90,6 +97,12 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
         setupTreeView(viewHolder, node);
         setupTreeViewNode(viewHolder, node);
         
+        convertView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        if (mMaxWidth < convertView.getMeasuredWidth()) {
+            mMaxWidth = convertView.getMeasuredWidth();
+            mTreeView.setTreeViewWidth(mMaxWidth);
+        }
         return convertView;
     }
     
