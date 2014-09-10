@@ -2,9 +2,7 @@ package com.johnz.treeview;
 
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -14,7 +12,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PathEffect;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -29,7 +26,7 @@ import android.widget.LinearLayout;
 
 public abstract class TreeViewAdapter<T> extends BaseAdapter {
     
-    public abstract View getTreeNodeView(TreeViewNode<T> node);
+    public abstract View getTreeNodeView(View convertView, TreeViewNode<T> node);
     
     private Context mContext;
     private TreeViewBuilder<T> mTreeViewBuilder;
@@ -79,7 +76,6 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
         return position;
     }
     
-    @SuppressLint("NewApi")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
@@ -94,8 +90,8 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
             convertView.setTag(viewHolder);
         }
         TreeViewNode<T> node = (TreeViewNode<T>) getItem(position);
-        setupTreeView(viewHolder, node);
-        setupTreeViewNode(viewHolder, node);
+        int contentHeight = setTreeViewNodeReturnHeight(viewHolder, node);
+        setTreeView(viewHolder, node, contentHeight);
         
         convertView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
@@ -103,6 +99,7 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
             mMaxWidth = convertView.getMeasuredWidth();
             mTreeView.setTreeViewWidth(mMaxWidth);
         }
+        
         return convertView;
     }
     
@@ -112,18 +109,24 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
         public FrameLayout contentWrapper;
     }
     
-    private void setupTreeView(ViewHolder viewHolder, final TreeViewNode<T> node) {
-        setupDottedBlockView(viewHolder, node);
+    private void setTreeView(ViewHolder viewHolder, final TreeViewNode<T> node, int contentHeight) {
+        setupDottedBlockView(viewHolder, node, contentHeight);
         setupExpandCollapseView(viewHolder, node);
     }
     
-    private void setupTreeViewNode(ViewHolder viewHolder, final TreeViewNode<T> node) {
-        View treeNodeView = getTreeNodeView(node);
-        if (treeNodeView != null) {
-            viewHolder.contentWrapper.removeAllViews();
+    private int setTreeViewNodeReturnHeight(ViewHolder viewHolder, final TreeViewNode<T> node) {
+        View treeNodeView = null;
+        if (viewHolder.contentWrapper.getChildCount() > 0) {
+            treeNodeView = viewHolder.contentWrapper.getChildAt(0);
+            getTreeNodeView(treeNodeView, node);
+        } else {
+            treeNodeView = getTreeNodeView(treeNodeView, node);
             viewHolder.contentWrapper.addView(treeNodeView);
         }
+        treeNodeView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         setContentWrapperListeners(viewHolder.contentWrapper, node);
+        return treeNodeView.getMeasuredHeight();
     }
     
     private void setContentWrapperListeners(FrameLayout contentWrapper, final TreeViewNode<T> node) {
@@ -148,11 +151,12 @@ public abstract class TreeViewAdapter<T> extends BaseAdapter {
         });
     }
 
-    private void setupDottedBlockView(ViewHolder viewHolder, TreeViewNode<T> node) {
+    private void setupDottedBlockView(ViewHolder viewHolder, TreeViewNode<T> node, int contentHeight) {
         LayoutParams layoutParams = viewHolder.dottedBlock.getLayoutParams();
         int singleOffset = mContext.getResources().getDimensionPixelSize(R.dimen.ic_expand_collapse_width);
         int nodeOffset = (node.getLevel() + (node.isLeaf()? 1: 0)) * singleOffset;
-        int nodeHeight = mContext.getResources().getDimensionPixelSize(R.dimen.treeview_node_height);
+        //int nodeHeight = mContext.getResources().getDimensionPixelSize(R.dimen.treeview_node_height);
+        int nodeHeight = contentHeight;
         layoutParams.width = nodeOffset;
         layoutParams.height = nodeHeight;
         viewHolder.dottedBlock.setLayoutParams(layoutParams);
